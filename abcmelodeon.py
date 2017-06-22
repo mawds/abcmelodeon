@@ -9,6 +9,37 @@ rxkey = re.compile(r'^K: ?(.+)$')
 # a note
 rxnote = re.compile(r"[a-gA-G]" )
 
+gRow = {"D":"4",
+        "^F":"^4",
+        "G":"6",
+        "A":"^6",
+        "B":"8",
+        "c":"^8",
+        "d":"10",
+        "e":"^10",
+        "^f":"^12",
+        "g":"12",
+        "a":"^14",
+        "b":"14",
+        "c":"^16",
+        "d'":"16"}
+
+dRow = {"A,":"3",
+        "^C":"^3",
+        "D":"5",
+        "E":"^5",
+        "^F":"7",
+        "G":"^7",
+        "A":"9",
+        "B":"^9",
+        "^c":"^11",
+        "d":"11",
+        "e":"^13",
+        "^f":"13",
+        "g":"^15",
+        "a'":"15"}
+
+
 def getkey (infile):
     """ Read an abc file and extract the key """
     key = None
@@ -55,6 +86,7 @@ def applykeysig(note, key):
     """ Sharpen the appropriate notes
     Only implemented for G/D for now
     """
+    # TODO Handle naturals
     if key == "C":
         return note
     if key == "G":
@@ -88,8 +120,14 @@ notes = extractnotes(abcfile)
 key = getkey(abcfile)
 
 newnotes = [[applykeysig(n, key=key) for n in nn] for nn in notes]
-print newnotes
 
 
 print applykeysig("A", "C")
 
+firstrow = newnotes[0]
+
+gRownotes = [[gRow.get(x,"") for x in y] for y in newnotes]
+dRownotes = [[dRow.get(x,"") for x in y] for y in newnotes]
+
+print gRownotes
+print dRownotes
