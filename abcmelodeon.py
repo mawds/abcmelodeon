@@ -5,7 +5,7 @@ import argparse
 
 # Regexs
 # The key line
-rxkey = re.compile(r'^K: ?(.+$)') 
+rxkey = re.compile(r'^K: ?(.+)$') 
 # a note
 rxnote = re.compile(r"[a-gA-G]" )
 
@@ -17,7 +17,7 @@ def getkey (infile):
         if m:
             if key is not None:
                 raise ValueError("Multiple key lines found")
-            key = m.group(1)
+            key = m.group(1).strip()
 
     return key
 
@@ -46,10 +46,29 @@ def extractnotes (infile):
             foundbody = True
             continue
         if foundbody:
-            notes.append( [ rxnote.findall(thisline) ])
+            notes.append(  rxnote.findall(thisline) )
 
 
     return notes
+
+def applykeysig(note, key):
+    """ Sharpen the appropriate notes
+    Only implemented for G/D for now
+    """
+    if key == "C":
+        return note
+    if key == "G":
+        if note.upper() == "F":
+            return ("^" + note)
+        return note
+    if key == "D":
+        if note.upper() == "F":
+            return ("^" + note)
+        if note.upper() == "C":
+            return ("^" + note)
+        return note
+    else:
+        print "Key not supported"
 
 
 
@@ -66,6 +85,11 @@ annotatedabc = annotateabc(abcfile)
 
 
 notes = extractnotes(abcfile)
-print notes
+key = getkey(abcfile)
 
+newnotes = [[applykeysig(n, key=key) for n in nn] for nn in notes]
+print newnotes
+
+
+print applykeysig("A", "C")
 
