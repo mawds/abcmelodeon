@@ -7,7 +7,7 @@ import argparse
 # The key line
 rxkey = re.compile(r'^K: ?(.+)$') 
 # a note
-rxnote = re.compile(r"([\^_]?[a-gA-G])" )
+rxnote = re.compile(r'([\^_]?[a-gA-G])|(".+?")' )
 
 
 gRow = {"F":"~2",
@@ -81,7 +81,11 @@ def extractnotes (infile):
             foundbody = True
             continue
         if foundbody:
-            notes.append(  rxnote.findall(thisline) )
+            linenotes = [i[0] for i in rxnote.findall(thisline)]
+            # Remove blank notes - these are where a chord was 
+            # extracted instead
+            justnotes = filter(None, linenotes)
+            notes.append( justnotes )
 
 
     return notes
