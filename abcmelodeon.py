@@ -21,7 +21,7 @@ gRow = {"D":"~4",
         "g":"~12",
         "a":"^14",
         "b":"~14",
-        "^c":"^16",
+        "^c'":"^16",
         "^d'":"~16"}
 
 dRow = {"A,":"~3",
@@ -122,7 +122,7 @@ key = getkey(abcfile)
 print notes
 
 newnotes = [[applykeysig(n, key=key) for n in nn] for nn in notes]
-
+print newnotes
 # TODO To a function
 gRownotes = [[gRow.get(x,"*") for x in y] for y in newnotes]
 dRownotes = [[dRow.get(x,"*") for x in y] for y in newnotes]
