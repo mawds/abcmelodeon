@@ -57,7 +57,6 @@ def annotateabc (infile):
     """ Annotate an abc file with button numbers """
 
     key = getkey(infile)
-    print key
 
 def readfile (infile):
     """ Read in a file """
@@ -89,11 +88,11 @@ def applykeysig(note, key):
     # TODO Handle naturals
     if key == "C":
         return note
-    if key == "G":
+    if key == "G" or key == "Gmaj":
         if note.upper() == "F":
             return ("^" + note)
         return note
-    if key == "D":
+    if key == "D" or key == "Dmaj":
         if note.upper() == "F":
             return ("^" + note)
         if note.upper() == "C":
@@ -121,13 +120,21 @@ key = getkey(abcfile)
 
 newnotes = [[applykeysig(n, key=key) for n in nn] for nn in notes]
 
+# TODO To a function
+gRownotes = [[gRow.get(x,"*") for x in y] for y in newnotes]
+dRownotes = [[dRow.get(x,"*") for x in y] for y in newnotes]
 
-print applykeysig("A", "C")
+gnotestring = [' '.join(x) for x in gRownotes]
+dnotestring = [' '.join(x) for x in dRownotes]
 
-firstrow = newnotes[0]
-
-gRownotes = [[gRow.get(x,"") for x in y] for y in newnotes]
-dRownotes = [[dRow.get(x,"") for x in y] for y in newnotes]
-
-print gRownotes
-print dRownotes
+with open(args.outfile, "w") as file:
+    foundkey = False
+    for line in abcfile:
+        file.write(line)
+        if foundkey:
+            if len(gnotestring) > 0:
+                file.write("w: " + gnotestring.pop(0) + "\n")
+            if len(dnotestring) > 0:
+                file.write("w: " + dnotestring.pop(0) + "\n")
+        if rxkey.search(line):
+            foundkey = True
