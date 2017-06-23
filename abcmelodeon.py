@@ -21,8 +21,8 @@ gRow = {"D":"~4",
         "g":"~12",
         "a":"^14",
         "b":"~14",
-        "c":"^16",
-        "d'":"~16"}
+        "^c":"^16",
+        "^d'":"~16"}
 
 dRow = {"A,":"~3",
         "^C":"^3",
@@ -117,6 +117,9 @@ annotatedabc = annotateabc(abcfile)
 
 notes = extractnotes(abcfile)
 key = getkey(abcfile)
+
+
+print notes
 
 newnotes = [[applykeysig(n, key=key) for n in nn] for nn in notes]
 
