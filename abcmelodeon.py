@@ -7,7 +7,7 @@ import argparse
 # The key line
 rxkey = re.compile(r'^K: ?(.+)$') 
 # a note
-rxnote = re.compile(r"[a-gA-G]" )
+rxnote = re.compile(r"([\^_]?[a-gA-G])" )
 
 
 gRow = {"F":"~2",
