@@ -128,8 +128,8 @@ def applykeysig(note, key):
 
 
 parser = argparse.ArgumentParser(description = "Add button numbers to abc file")
-parser.add_argument("--infile", required=True)
-parser.add_argument("--outfile", required=True)
+parser.add_argument("infile")
+parser.add_argument("outfile")
 
 args = parser.parse_args()
 
