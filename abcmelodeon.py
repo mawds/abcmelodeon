@@ -121,6 +121,8 @@ def applykeysig(note, key):
         return note
     else:
         print "Key not supported"
+        quit()
+
 
 
 
