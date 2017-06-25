@@ -142,10 +142,9 @@ notes = extractnotes(abcfile)
 key = getkey(abcfile)
 
 
-print notes
 
 newnotes = [[applykeysig(n, key=key) for n in nn] for nn in notes]
-print newnotes
+
 # TODO To a function
 gRownotes = [[gRow.get(x,"*") for x in y] for y in newnotes]
 dRownotes = [[dRow.get(x,"*") for x in y] for y in newnotes]
@@ -164,3 +163,4 @@ with open(args.outfile, "w") as file:
                 file.write("w: " + dnotestring.pop(0) + "\n")
         if rxkey.search(line):
             foundkey = True
+
