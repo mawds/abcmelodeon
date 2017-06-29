@@ -9,8 +9,8 @@ rxkey = re.compile(r'^K: ?(.+)$')
 # a note
 rxnote = re.compile(r'([\^_]?[a-gA-G])|(".+?")' )
 
-
-gRow = {"F":"~2",
+notemappings = {}
+notemappings["gRow"]= {"F":"~2",
         "_E":"^2",
         "D":"~4",
         "^F":"^4",
@@ -27,7 +27,7 @@ gRow = {"F":"~2",
         "^c'":"^16",
         "^d'":"~16"}
 
-dRow = {"^G":"~1",
+notemappings["dRow"] = {"^G":"~1",
         "_B":"^1",
         "A,":"~3",
         "^C":"^3",
@@ -43,7 +43,14 @@ dRow = {"^G":"~1",
         "^f":"~13",
         "g":"^15",
         "a'":"~15"}
-
+#TODO finish - do automatically. Sharps and flats
+notemappings["noteNames"] = {"a":"A",
+        "b":"B",
+        "c":"C",
+        "d":"D",
+        "e":"E",
+        "f":"F",
+        "g":"G"}
 
 def getkey (infile):
     """ Read an abc file and extract the key """
@@ -87,7 +94,6 @@ def extractnotes (infile):
             justnotes = filter(None, linenotes)
             notes.append( justnotes )
 
-
     return notes
 
 def applykeysig(note, key):
@@ -110,14 +116,22 @@ def applykeysig(note, key):
     else:
         print "Key not supported"
 
+def getNoteString(notes, notemap):
+    mappednotes = [[notemap.get(x,"*") for x in y] for y in newnotes]
 
+    notestring = [' '.join(x)   for x in mappednotes]
+
+    return notestring
 
 
 parser = argparse.ArgumentParser(description = "Add button numbers to abc file")
-parser.add_argument("--infile", required=True)
-parser.add_argument("--outfile", required=True)
+parser.add_argument("infile")
+parser.add_argument("outfile")
+parser.add_argument("--mappings", default ="gRow,dRow")
+
 
 args = parser.parse_args()
+mappings = args.mappings.split(",")
 
 abcfile = readfile(args.infile)
 
@@ -127,26 +141,19 @@ annotatedabc = annotateabc(abcfile)
 notes = extractnotes(abcfile)
 key = getkey(abcfile)
 
-
-print notes
-
 newnotes = [[applykeysig(n, key=key) for n in nn] for nn in notes]
-print newnotes
-# TODO To a function
-gRownotes = [[gRow.get(x,"*") for x in y] for y in newnotes]
-dRownotes = [[dRow.get(x,"*") for x in y] for y in newnotes]
 
-gnotestring = [' '.join(x) for x in gRownotes]
-dnotestring = [' '.join(x) for x in dRownotes]
+notestrings = []
+for m in mappings:
+    notestrings.append(getNoteString(newnotes, notemappings[m]))
 
 with open(args.outfile, "w") as file:
     foundkey = False
     for line in abcfile:
         file.write(line)
         if foundkey:
-            if len(gnotestring) > 0:
-                file.write("w: " + gnotestring.pop(0) + "\n")
-            if len(dnotestring) > 0:
-                file.write("w: " + dnotestring.pop(0) + "\n")
+            for n in notestrings:
+                if len(n) > 0:
+                    file.write("w: " + n.pop(0) + "\n")
         if rxkey.search(line):
             foundkey = True
