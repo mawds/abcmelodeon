@@ -154,11 +154,14 @@ annotatedabc = annotateabc(abcfile)
 
 
 notes = extractnotes(abcfile)
+
+# Extract key and add sharps and flats to notes
 key = getkey(abcfile)
+newnotes = [[applykeysig(n, key=key) for n in nn] for nn in notes]
 
 notestrings = []
 for m in mappings:
-    notestrings.append(getNoteString(notes, notemappings[m]))
+    notestrings.append(getNoteString(newnotes, notemappings[m]))
 
 with open(args.outfile, "w") as file:
     foundkey = False
