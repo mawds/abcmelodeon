@@ -92,7 +92,6 @@ def annotateabc (infile):
 
     newnotes = [[applykeysig(n, key=key) for n in nn] for nn in notes]
 
-
     notestrings = []
     for m in mappings:
         notestrings.append(getNoteString(newnotes, notemappings[m]))
@@ -157,6 +156,12 @@ def extractabc(tunebook):
                 tunes.append(thistune)
             intune = False
 
+    # If there's no blank line at the end,add the tune
+    if intune:
+        if len(thistune) > 3:
+            tunes.append(thistune)
+        
+
     return tunes
 
 def applykeysig(note, key):
@@ -196,28 +201,18 @@ parser = argparse.ArgumentParser(description = "Add button numbers to abc file")
 parser.add_argument("infile")
 parser.add_argument("outfile")
 parser.add_argument("--mappings", default ="gRow,dRow")
-parser.add_argument("--multifile", action="store_true") 
 
 args = parser.parse_args()
 mappings = args.mappings.split(",")
 
-if args.multifile:
-    print "Processing multifile"
-    abcfiles = readfile(args.infile)
-    abcbook = extractabc(abcfiles)
-    annotatedabc = []
-    for tune in abcbook:
-        annotated = annotateabc(tune)
-        annotatedabc.append(annotated)
+abcfiles = readfile(args.infile)
+abcbook = extractabc(abcfiles)
+annotatedabc = []
+for tune in abcbook:
+    annotated = annotateabc(tune)
+    annotatedabc.append(annotated)
 
-    with open(args.outfile, "w") as file:
-        for abc in annotatedabc:
-            file.write(abc)
-    quit()
-else:
-    abcfile = readfile(args.infile)
-    annotatedabc = annotateabc(abcfile)
-
-    with open(args.outfile, "w") as file:
-        file.write(annotatedabc)
+with open(args.outfile, "w") as file:
+    for abc in annotatedabc:
+        file.write(abc)
 
