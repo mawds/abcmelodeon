@@ -83,7 +83,11 @@ def getkey (infile):
 def annotateabc (infile):
     """ Annotate an abc file with button numbers """
 
-    key = getkey(infile)
+    try:
+        key = getkey(infile)
+    except ValueError as e:
+        print e
+        print infile
     notes = extractnotes(infile)
 
     newnotes = [[applykeysig(n, key=key) for n in nn] for nn in notes]
