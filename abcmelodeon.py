@@ -88,6 +88,7 @@ def annotateabc (infile):
 
     newnotes = [[applykeysig(n, key=key) for n in nn] for nn in notes]
 
+
     notestrings = []
     for m in mappings:
         notestrings.append(getNoteString(newnotes, notemappings[m]))
@@ -136,18 +137,20 @@ def extractabc(tunebook):
     """ Extract the tunes from a tunebook """
     # TODO handle comments, formatting etc.
     tunes = []
-    thistune = '' 
+    thistune = [] 
     intune = False
     for thisline in tunebook:
         if rxtunestart.search(thisline) and not intune:
-            thistune = ''
+            thistune = []
             intune = True
 
         if intune: 
-            thistune += thisline
+            thistune.append(thisline)
+            
 
         if thisline in ['\n', '\r\n']:
-            tunes.append(thistune)
+            if len(thistune) > 3:
+                tunes.append(thistune)
             intune = False
 
     return tunes
@@ -157,6 +160,8 @@ def applykeysig(note, key):
     Only implemented for G/D for now
     """
     # TODO Handle naturals
+    # TODO handle other keys - presumably there's a clever way
+    # of doing this if you know music theory
     if key == "C":
         return note
     if key == "G" or key == "Gmaj":
@@ -170,8 +175,10 @@ def applykeysig(note, key):
             return ("^" + note)
         return note
     else:
-        print "Key not supported"
-        quit()
+        # Just return the note for now 
+        # THIS WILL BREAK THE ANNOTATION 
+        return note
+
 
 
 def getNoteString(notes, notemap):
@@ -195,8 +202,8 @@ if args.multifile:
     abcfiles = readfile(args.infile)
     abcbook = extractabc(abcfiles)
     annotatedabc = []
-    for abc in abcbook:
-        annotated = annotateabc(abc)
+    for tune in abcbook:
+        annotated = annotateabc(tune)
         annotatedabc.append(annotated)
 
     with open(args.outfile, "w") as file:
