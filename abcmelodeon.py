@@ -8,6 +8,8 @@ import argparse
 rxkey = re.compile(r'^K: ?(.+)$') 
 # a note
 rxnote = re.compile(r'([\^_]?[a-gA-G])|(".+?")' )
+rxtunestart = re.compile(r'^[XT]:')
+rxblankline = re.compile(r'^$')
 
 notemappings = {}
 notemappings["gRow"]= {"F":"~2",
@@ -82,6 +84,27 @@ def annotateabc (infile):
     """ Annotate an abc file with button numbers """
 
     key = getkey(infile)
+    notes = extractnotes(infile)
+
+    newnotes = [[applykeysig(n, key=key) for n in nn] for nn in notes]
+
+    notestrings = []
+    for m in mappings:
+        notestrings.append(getNoteString(newnotes, notemappings[m]))
+
+    outabc = ''
+    foundkey = False
+    for line in infile:
+        outabc += line
+        if foundkey:
+            for n in notestrings:
+                if len(n) > 0:
+                    outabc += ("w: " + n.pop(0) + "\n")
+        if rxkey.search(line):
+            foundkey = True
+
+    return outabc
+
 
 def readfile (infile):
     """ Read in a file """
@@ -108,6 +131,26 @@ def extractnotes (infile):
             notes.append( justnotes )
 
     return notes
+
+def extractabc(tunebook):
+    """ Extract the tunes from a tunebook """
+    # TODO handle comments, formatting etc.
+    tunes = []
+    thistune = '' 
+    intune = False
+    for thisline in tunebook:
+        if rxtunestart.search(thisline) and not intune:
+            thistune = ''
+            intune = True
+
+        if intune: 
+            thistune += thisline
+
+        if thisline in ['\n', '\r\n']:
+            tunes.append(thistune)
+            intune = False
+
+    return tunes
 
 def applykeysig(note, key):
     """ Sharpen the appropriate notes
@@ -138,39 +181,32 @@ def getNoteString(notes, notemap):
 
     return notestring
 
-
 parser = argparse.ArgumentParser(description = "Add button numbers to abc file")
 parser.add_argument("infile")
 parser.add_argument("outfile")
 parser.add_argument("--mappings", default ="gRow,dRow")
-
+parser.add_argument("--multifile", action="store_true") 
 
 args = parser.parse_args()
 mappings = args.mappings.split(",")
 
-abcfile = readfile(args.infile)
+if args.multifile:
+    print "Processing multifile"
+    abcfiles = readfile(args.infile)
+    abcbook = extractabc(abcfiles)
+    annotatedabc = []
+    for abc in abcbook:
+        annotated = annotateabc(abc)
+        annotatedabc.append(annotated)
 
-annotatedabc = annotateabc(abcfile)
+    with open(args.outfile, "w") as file:
+        for abc in annotatedabc:
+            file.write(abc)
+    quit()
+else:
+    abcfile = readfile(args.infile)
+    annotatedabc = annotateabc(abcfile)
 
-
-notes = extractnotes(abcfile)
-
-# Extract key and add sharps and flats to notes
-key = getkey(abcfile)
-newnotes = [[applykeysig(n, key=key) for n in nn] for nn in notes]
-
-notestrings = []
-for m in mappings:
-    notestrings.append(getNoteString(newnotes, notemappings[m]))
-
-with open(args.outfile, "w") as file:
-    foundkey = False
-    for line in abcfile:
-        file.write(line)
-        if foundkey:
-            for n in notestrings:
-                if len(n) > 0:
-                    file.write("w: " + n.pop(0) + "\n")
-        if rxkey.search(line):
-            foundkey = True
+    with open(args.outfile, "w") as file:
+        file.write(annotatedabc)
 
