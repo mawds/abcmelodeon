@@ -211,23 +211,21 @@ def applykeysig(note, key):
     # TODO Handle naturals
     # TODO handle other keys - presumably there's a clever way
     # of doing this if you know music theory
-    if key == "C":
+    if key in ["C", "Am", "AMin", "Amin", "GMix", "Gmix", "DDor", "Ddor"]:
         return note
-    if key == "G" or key == "Gmaj":
+    if key in ["G","Gmaj","Em", "ADor", "Ador", "DMix", "Dmix", "EDor", "Edor"]:
         if note.upper() == "F":
             return ("^" + note)
         return note
-    if key == "D" or key == "Dmaj":
+    if key in ["D", "Dmaj", "Edor", "AMix", "Amix", "Bm", "Bmin"]:
         if note.upper() == "F":
             return ("^" + note)
         if note.upper() == "C":
             return ("^" + note)
         return note
     else:
-        print "Key not recognised " + key
-        # Just return the note for now 
-        # THIS WILL BREAK THE ANNOTATION 
-        return note
+        # Just return a rest if we can't work out the key
+        return "z"
 
 
 
