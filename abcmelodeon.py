@@ -83,7 +83,8 @@ def getkey (infile):
 
 def annotateabc (infile):
     """ Annotate an abc file with button numbers """
-
+    print "Depreciated - use annotabc2"
+    quit()
     try:
         key = getkey(infile)
     except ValueError as e:
@@ -111,6 +112,10 @@ def annotateabc (infile):
 
     return outabc
 
+def stripdecoration(line):
+    """ Strip everything in +s or !s """
+    return re.sub('[!\+].+[!\+]', '', line)
+
 def annotateabc2(inabc):
     """ Annotate an abc file with button numbers - take 2
     This assumes we're passing in a whole abc file """
@@ -130,6 +135,7 @@ def annotateabc2(inabc):
             if currentkey is None:
                 raise ValueError("Notes found before key has been set")
             # Extract the notes
+            line = stripdecoration(line)
             linenotes = [i[0] for i in rxnote.findall(line)]
             # Remove blank notes - these are where a chord was 
             # extracted instead
@@ -254,4 +260,3 @@ for tune in abcbook:
 with open(args.outfile, "w") as file:
     for abc in annotatedabc:
         file.write(abc)
-
