@@ -129,6 +129,9 @@ def annotateabc2(inabc):
         m = rxkey.search(line)
         if m:
             currentkey = m.group(1).strip()
+
+        if re.match(r'^%', line):
+            break
         
         if not rxfieldline.match(line): # On a noteline
             notes = []
@@ -149,7 +152,9 @@ def annotateabc2(inabc):
             
             for n in notestrings:
                 if len(n) > 0:
-                    outabc += ("w: " + n.pop(0) + "\n")
+                    thesenotes = n.pop(0)
+                    if len(thesenotes.strip()) >= 1:
+                        outabc += ("w: " + thesenotes + "\n")
 
 
     return outabc
