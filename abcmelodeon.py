@@ -10,6 +10,7 @@ rxkey = re.compile(r'^K: ?(.+)$')
 rxnote = re.compile(r'([\^_]?[a-gA-G])|(".+?")' )
 rxtunestart = re.compile(r'^[XT]:')
 rxblankline = re.compile(r'^$')
+rxfieldline = re.compile(r'^\w:')
 
 notemappings = {}
 notemappings["gRow"]= {"F":"~2",
@@ -102,12 +103,51 @@ def annotateabc (infile):
         outabc += line
         if foundkey:
             for n in notestrings:
+                print n
                 if len(n) > 0:
                     outabc += ("w: " + n.pop(0) + "\n")
         if rxkey.search(line):
             foundkey = True
 
     return outabc
+
+def annotateabc2(inabc):
+    """ Annotate an abc file with button numbers - take 2
+    This assumes we're passing in a whole abc file """
+    # TODO Handle inline key changes?
+
+    currentkey = None
+    outabc  = ''
+    for line in inabc:
+        outabc += line
+
+        m = rxkey.search(line)
+        if m:
+            currentkey = m.group(1).strip()
+        
+        if not rxfieldline.match(line): # On a noteline
+            notes = []
+            if currentkey is None:
+                raise ValueError("Notes found before key has been set")
+            # Extract the notes
+            linenotes = [i[0] for i in rxnote.findall(line)]
+            # Remove blank notes - these are where a chord was 
+            # extracted instead
+            justnotes = filter(None, linenotes)
+            notes.append(justnotes)
+
+            newnotes = [[applykeysig(n, key=currentkey) for n in nn] for nn in notes]
+            notestrings = []
+            for m in mappings:
+                notestrings.append(getNoteString(newnotes, notemappings[m])) # list of button #s
+            
+            for n in notestrings:
+                if len(n) > 0:
+                    outabc += ("w: " + n.pop(0) + "\n")
+
+
+    return outabc
+
 
 
 def readfile (infile):
@@ -184,6 +224,7 @@ def applykeysig(note, key):
             return ("^" + note)
         return note
     else:
+        print "Key not recognised " + key
         # Just return the note for now 
         # THIS WILL BREAK THE ANNOTATION 
         return note
@@ -209,7 +250,7 @@ abcfiles = readfile(args.infile)
 abcbook = extractabc(abcfiles)
 annotatedabc = []
 for tune in abcbook:
-    annotated = annotateabc(tune)
+    annotated = annotateabc2(tune)
     annotatedabc.append(annotated)
 
 with open(args.outfile, "w") as file:
