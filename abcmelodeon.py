@@ -265,6 +265,14 @@ parser.add_argument("--mappings", default ="gRow,dRow", \
 args = parser.parse_args()
 mappings = args.mappings.split(",")
 
+for m in mappings:
+    if m not in notemappings:
+        print "Cannot find " + m + "in note mappings"
+        print "mapping should be one or more of:"
+        print ",".join(list(notemappings.keys()))
+        quit()
+
+
 abcfiles = readfile(args.infile)
 abcbook = extractabc(abcfiles)
 annotatedabc = []
