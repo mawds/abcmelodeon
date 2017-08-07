@@ -258,7 +258,9 @@ def getNoteString(notes, notemap):
 parser = argparse.ArgumentParser(description = "Add button numbers to abc file")
 parser.add_argument("infile")
 parser.add_argument("outfile")
-parser.add_argument("--mappings", default ="gRow,dRow")
+parser.add_argument("--mappings", default ="gRow,dRow", \
+        help = "Comma separated list of note names/numbers to show. One or more of: " + \
+        ','.join(list(notemappings.keys())))
 
 args = parser.parse_args()
 mappings = args.mappings.split(",")
