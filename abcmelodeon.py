@@ -59,14 +59,22 @@ notemappings["dRow"] = {"^G":"~1",
         "e'":"^21"
         }
 
-#TODO finish - do automatically. Sharps and flats
-notemappings["noteNames"] = {"a":"A",
-        "b":"B",
-        "c":"C",
-        "d":"D",
-        "e":"E",
-        "f":"F",
-        "g":"G"}
+# noteNames will annotate with the note letter
+# we build this semi-programatically
+notenames = ["A","B","C","D","E","F","G"]
+notesflat = ["_" + n for n in notenames]
+notessharp = [ "^" + n for n in notenames]
+
+allnotenames = notenames + notesflat + notessharp
+allnotesymbs = notenames + \
+        [n + 'b' for n in notenames] + \
+        [n + '#' for n in notenames]
+    
+
+notemappings["noteNames"] = dict(zip(allnotenames, allnotesymbs))
+notemappings["noteNames"].update(dict(zip([n.lower() for n in allnotenames], allnotesymbs)))
+notemappings["noteNames"].update(dict(zip([n + "," for n in allnotenames], allnotesymbs)))
+notemappings["noteNames"].update(dict(zip([n + "'" for n in allnotenames], allnotesymbs)))
 
 def getkey (infile):
     """ Read an abc file and extract the key """
