@@ -91,7 +91,15 @@ def getkey (infile):
 
 def stripdecoration(line):
     """ Strip everything in +s or !s """
-    return re.sub('[!\+].+[!\+]', '', line)
+    step1 = re.sub('[!\+].+[!\+]', '', line)
+    if re.search(r"\[K:.*?\]", step1):
+        print("""Warning: possible mid row key change.  Notes on remainder of line
+        will be rendered incorrectly""")
+    step2 =  re.sub(r"\[.*?\]", "", step1) 
+    step3 =  re.sub(r"\{.*?\}", "", step1) 
+
+    return step3
+
 
 def annotateabc(inabc):
     """ Annotate an abc file with button numbers - take 2
