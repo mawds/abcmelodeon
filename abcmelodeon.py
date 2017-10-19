@@ -89,42 +89,11 @@ def getkey (infile):
     return key
 
 
-def annotateabc (infile):
-    """ Annotate an abc file with button numbers """
-    print "Depreciated - use annotabc2"
-    quit()
-    try:
-        key = getkey(infile)
-    except ValueError as e:
-        print e
-        print infile
-    notes = extractnotes(infile)
-
-    newnotes = [[applykeysig(n, key=key) for n in nn] for nn in notes]
-
-    notestrings = []
-    for m in mappings:
-        notestrings.append(getNoteString(newnotes, notemappings[m]))
-
-    outabc = ''
-    foundkey = False
-    for line in infile:
-        outabc += line
-        if foundkey:
-            for n in notestrings:
-                print n
-                if len(n) > 0:
-                    outabc += ("w: " + n.pop(0) + "\n")
-        if rxkey.search(line):
-            foundkey = True
-
-    return outabc
-
 def stripdecoration(line):
     """ Strip everything in +s or !s """
     return re.sub('[!\+].+[!\+]', '', line)
 
-def annotateabc2(inabc):
+def annotateabc(inabc):
     """ Annotate an abc file with button numbers - take 2
     This assumes we're passing in a whole abc file """
     # TODO Handle inline key changes?
@@ -277,7 +246,7 @@ abcfiles = readfile(args.infile)
 abcbook = extractabc(abcfiles)
 annotatedabc = []
 for tune in abcbook:
-    annotated = annotateabc2(tune)
+    annotated = annotateabc(tune)
     annotatedabc.append(annotated)
 
 with open(args.outfile, "w") as file:
