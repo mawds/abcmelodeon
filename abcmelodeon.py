@@ -13,7 +13,10 @@ rxblankline = re.compile(r'^$')
 rxfieldline = re.compile(r'^\w:')
 
 notemappings = {}
-notemappings["gRow"]= {"F":"~2",
+notemappings["gRow"]= {
+        "B,":"~0",
+        "C,":"^0",
+        "F":"~2",
         "_E":"^2",
         "D":"~4",
         "^F":"^4",
@@ -35,7 +38,10 @@ notemappings["gRow"]= {"F":"~2",
         "b'":"~20"
         }
 
-notemappings["dRow"] = {"^G":"~1",
+notemappings["dRow"] = {
+        "G,":"-1",
+        "A,":"^-1",
+        "^G":"~1",
         "_B":"^1",
         "A,":"~3",
         "^C":"^3",
