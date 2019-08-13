@@ -210,7 +210,6 @@ def extractabc(tunebook):
 
 def applykeysig(note, key):
     """ Sharpen the appropriate notes
-    Only implemented for G/D for now
     """
     # TODO Handle naturals
     # TODO handle other keys - presumably there's a clever way
@@ -225,6 +224,14 @@ def applykeysig(note, key):
         if note.upper() == "F":
             return ("^" + note)
         if note.upper() == "C":
+            return ("^" + note)
+        return note
+    if key in ["A", "F#m", "Emix", "BDor", "C#Phr", "DLyd", "G#Loc"]:
+        if note.upper() == "F":
+            return ("^" + note)
+        if note.upper() == "C":
+            return ("^" + note)
+        if note.upper() == "G":
             return ("^" + note)
         return note
     else:
