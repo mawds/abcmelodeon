@@ -234,6 +234,10 @@ def applykeysig(note, key):
         if note.upper() == "G":
             return ("^" + note)
         return note
+    if key in ["F"]:
+        if note.upper() == "B":
+            return ("_" + note)
+        return note
     else:
         # Just return a rest if we can't work out the key
         return "z"
