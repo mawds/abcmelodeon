@@ -196,12 +196,14 @@ def extractabc(tunebook):
         if thisline in ['\n', '\r\n']:
             if len(thistune) > 3:
                 tunes.append(thistune)
+                thistune = []
             intune = False
 
     # If there's no blank line at the end,add the tune
     if intune:
         if len(thistune) > 3:
             tunes.append(thistune)
+            thistune = []
         
 
     return tunes
